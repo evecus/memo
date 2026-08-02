@@ -1,0 +1,50 @@
+name: Build 
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build (windows-x86_64)
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: 缓存 Cargo 依赖
+        uses: Swatinem/rust-cache@v2
+
+      - name: 编译 Release 版本
+        run: cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: 整理产物
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/x86_64-pc-windows-msvc/release/Memo.exe dist/Memo.exe
+
+      - name: 安装 NSIS
+        run: choco install nsis -y
+
+      - name: 使用 NSIS 打包安装程序
+        shell: cmd
+        run: |
+          copy dist\Memo.exe Memo.exe
+          "C:\Program Files (x86)\NSIS\makensis.exe" install.nsi
+
+
+      - name: 创建 GitHub Release 并上传文件
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: test
+          name: test
+          files: Memo-Setup.exe
