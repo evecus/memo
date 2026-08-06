@@ -884,8 +884,8 @@ fn main() -> eframe::Result<()> {
     }
     let options = eframe::NativeOptions {
         viewport,
-        // 记住窗口位置/大小，下次启动恢复到上一次关闭时的状态
-        persist_window: true,
+        
+        persist_window: false,
         ..Default::default()
     };
     eframe::run_native(
