@@ -86,6 +86,7 @@ impl NoteApp {
                     let c_resp = ui.add(
                         egui::TextEdit::multiline(&mut note.content)
                             .id(content_id)
+                            .font(egui::FontId::proportional(theme::EDITOR_FONT_SIZE))
                             .desired_width(f32::INFINITY)
                             .min_size(Vec2::new(ui.available_width(), body_h))
                             .frame(false)

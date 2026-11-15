@@ -48,7 +48,20 @@ pub fn lerp_color(a: Color32, b: Color32, t: f32) -> Color32 {
 const WARMUP_STATIC_TEXT: &str = "Memo便签新建搜索无标题写点什么创建于最近编辑字张还没有便签没有匹配的便签选择或新建一张便签确定删除这张便签吗此操作无法撤销删除取消复制剪切粘贴全选就绪自动保存已开启已自动保存正在输入保存失败从旧版迁移快捷键刚刚分钟前小时前昨天天前个月前鹅黄粉蓝绿紫杏橙无标题确定取消知道了保存状态数据库写入失败颜色设置新建便签搜索便签内容字数第一二三四五六七八九十零0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ，。！？、：；“”‘’（）【】《》—…·.-+/ :()[]{}#@%&*!?\n\t";
 
 /// 界面实际用到的字号（painter.layout 与 TextStyle 两种路径都要覆盖）。
-const WARMUP_SIZES: [f32; 8] = [11.0, 12.0, 12.5, 14.5, 15.5, 16.0, 20.5, 22.0];
+/// 编辑区正文字号。
+pub const EDITOR_FONT_SIZE: f32 = 19.0;
+
+const WARMUP_SIZES: [f32; 9] = [
+    11.0,
+    12.0,
+    12.5,
+    14.5,
+    15.5,
+    16.0,
+    EDITOR_FONT_SIZE,
+    20.5,
+    22.0,
+];
 
 /// 启动期字体预热。
 ///
