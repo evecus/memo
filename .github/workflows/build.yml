@@ -2,9 +2,6 @@ name: Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [master, main]
-  pull_request:
 
 env:
   CARGO_TERM_COLOR: always
@@ -35,27 +32,17 @@ jobs:
           cp target/x86_64-pc-windows-msvc/release/memo.exe dist/Memo.exe
           cp dist/Memo.exe Memo.exe
 
-      - name: 上传 exe 产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: Memo-exe
-          path: dist/Memo.exe
-
       - name: 安装 NSIS
-        if: github.event_name == 'workflow_dispatch'
         run: choco install nsis -y
 
       - name: 使用 NSIS 打包安装程序
-        if: github.event_name == 'workflow_dispatch'
         shell: cmd
         run: '"C:\Program Files (x86)\NSIS\makensis.exe" install.nsi'
 
       - name: 创建 GitHub Release 并上传文件
-        if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.2.0
           name: Memo v0.2.0
           files: |
-            dist/Memo.exe
             Memo-Setup.exe
