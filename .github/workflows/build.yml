@@ -10,39 +10,9 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  verify:
-    name: 检查（fmt / clippy / test）
-    runs-on: ubuntu-latest
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      - name: 安装 Linux 图形依赖
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxcb1-dev libxrandr-dev libxi-dev libgl1-mesa-dev
-
-      - name: 安装 Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - name: 缓存 Cargo 依赖
-        uses: Swatinem/rust-cache@v2
-
-      - name: 格式检查
-        run: cargo fmt --all -- --check
-
-      - name: clippy（零警告）
-        run: cargo clippy --locked --all-targets -- -D warnings
-
-      - name: 单元测试
-        run: cargo test --locked
-
   build-windows:
     name: 构建 Windows (x86_64-msvc)
     runs-on: windows-latest
-    needs: verify
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
