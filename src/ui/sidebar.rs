@@ -139,7 +139,7 @@ impl NoteApp {
                 rect.center(),
                 Align2::CENTER_CENTER,
                 truncate(&title, 20),
-                FontId::proportional(15.5),
+                FontId::proportional(18.0),
                 TEXT_DARK,
             );
 
