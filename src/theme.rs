@@ -147,17 +147,17 @@ pub fn setup_visuals(ctx: &egui::Context) {
     v.extreme_bg_color = BG_EDITOR;
     v.faint_bg_color = Color32::from_rgb(242, 244, 249);
     v.selection.bg_fill = ACCENT_SOFT;
-    v.selection.stroke = Stroke::new(1.0, ACCENT);
+    v.selection.stroke = Stroke::new(1.0_f32, ACCENT);
     v.widgets.inactive.bg_fill = Color32::from_rgb(239, 241, 248);
     v.widgets.inactive.rounding = Rounding::same(9.0);
-    v.widgets.inactive.fg_stroke = Stroke::new(1.0, TEXT_DARK);
+    v.widgets.inactive.fg_stroke = Stroke::new(1.0_f32, TEXT_DARK);
     v.widgets.hovered.bg_fill = ACCENT_SOFT;
     v.widgets.hovered.rounding = Rounding::same(9.0);
     v.widgets.active.bg_fill = ACCENT;
     v.widgets.active.rounding = Rounding::same(9.0);
-    v.widgets.active.fg_stroke = Stroke::new(1.0, Color32::WHITE);
+    v.widgets.active.fg_stroke = Stroke::new(1.0_f32, Color32::WHITE);
     v.override_text_color = Some(TEXT_DARK);
-    v.text_cursor.stroke = Stroke::new(2.0, ACCENT);
+    v.text_cursor.stroke = Stroke::new(2.0_f32, ACCENT);
     v.window_rounding = Rounding::same(12.0);
     ctx.set_visuals(v);
 }

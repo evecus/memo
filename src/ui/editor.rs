@@ -236,7 +236,7 @@ impl NoteApp {
                     let (r, resp) = ui.allocate_exact_size(Vec2::splat(16.0), egui::Sense::click());
                     let p = ui.painter_at(r);
                     if i == cur_color {
-                        p.circle_stroke(r.center(), 8.0, Stroke::new(2.0, ACCENT));
+                        p.circle_stroke(r.center(), 8.0, Stroke::new(2.0_f32, ACCENT));
                         p.circle_filled(r.center(), 5.5, theme::color_for(i));
                     } else {
                         p.circle_filled(r.center(), 6.5, theme::color_for(i));

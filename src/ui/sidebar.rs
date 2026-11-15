@@ -133,9 +133,9 @@ impl NoteApp {
             let base = theme::color_for(color_idx);
             let fill = theme::lerp_color(base.gamma_multiply(0.88), base, t);
             let border = if selected {
-                Stroke::new(1.8, ACCENT)
+                Stroke::new(1.8_f32, ACCENT)
             } else {
-                Stroke::new(1.0, Color32::from_black_alpha(12))
+                Stroke::new(1.0_f32, Color32::from_black_alpha(12))
             };
 
             let painter = ui.painter_at(rect);
