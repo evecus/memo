@@ -71,6 +71,7 @@ pub fn truncate(s: &str, max_chars: usize) -> String {
 }
 
 /// 取内容的第一行作为列表摘要。
+#[allow(dead_code)]
 pub fn first_line(s: &str) -> String {
     let t = s.trim();
     match t.find('\n') {

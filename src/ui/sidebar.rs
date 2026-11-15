@@ -1,16 +1,16 @@
 //! 侧栏：Logo、新建按钮、搜索、便签卡片列表、右键删除菜单。
 
-use eframe::egui::{self, Color32, FontId, Pos2, Rect, RichText, Stroke, Vec2};
+use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, RichText, Stroke, Vec2};
 
 use crate::app::NoteApp;
 use crate::theme::{self, ACCENT, ERROR_RED, TEXT_DARK, TEXT_FAINT, TEXT_SOFT};
-use crate::util::{first_line, fmt_time, truncate};
+use crate::util::truncate;
 
-const CARD_HEIGHT: f32 = 80.0;
+const CARD_HEIGHT: f32 = 52.0;
 
 impl NoteApp {
     pub(crate) fn sidebar(&mut self, ui: &mut egui::Ui) {
-        self.header(ui);
+        ui.add_space(8.0);
 
         let new_btn =
             egui::Button::new(RichText::new("＋  新建便签").color(Color32::WHITE).strong())
@@ -62,29 +62,6 @@ impl NoteApp {
             .show(ui, |ui| self.card_list(ui));
     }
 
-    fn header(&self, ui: &mut egui::Ui) {
-        ui.add_space(4.0);
-        ui.horizontal(|ui| {
-            if let Some(tex) = &self.logo_texture {
-                ui.add(egui::Image::new(tex).fit_to_exact_size(Vec2::new(20.0, 20.0)));
-            } else {
-                let (r, _) = ui.allocate_exact_size(Vec2::new(20.0, 20.0), egui::Sense::hover());
-                ui.painter().circle_filled(r.center(), 9.0, ACCENT);
-                ui.painter()
-                    .circle_filled(r.center() - Vec2::new(1.5, 1.5), 4.5, Color32::WHITE);
-            }
-            ui.add_space(5.0);
-            ui.label(RichText::new("Memo").size(21.0).strong().color(TEXT_DARK));
-        });
-        ui.add_space(3.0);
-        ui.label(
-            RichText::new("轻量的本地便签 · 自动保存")
-                .size(11.5)
-                .color(TEXT_FAINT),
-        );
-        ui.add_space(16.0);
-    }
-
     fn card_list(&mut self, ui: &mut egui::Ui) {
         let ids = self.notes.sorted_ids(&self.search);
         if ids.is_empty() {
@@ -107,14 +84,11 @@ impl NoteApp {
         let mut delete_requested: Option<u64> = None;
 
         for id in ids {
-            let Some((title, preview, updated, color_idx)) = self.notes.get(id).map(|n| {
-                (
-                    n.display_title(),
-                    first_line(&n.content),
-                    n.updated,
-                    n.color,
-                )
-            }) else {
+            let Some((title, color_idx)) = self
+                .notes
+                .get(id)
+                .map(|n| (n.display_title(), n.color))
+            else {
                 continue;
             };
             let selected = self.current == Some(id);
@@ -160,39 +134,13 @@ impl NoteApp {
                 );
             }
 
-            let x = rect.left() + 16.0;
-            let w = rect.width() - 32.0;
-            let title_galley = painter.layout(
+            // 仅居中显示便签标题。
+            painter.text(
+                rect.center(),
+                Align2::CENTER_CENTER,
                 truncate(&title, 20),
-                FontId::proportional(15.0),
+                FontId::proportional(15.5),
                 TEXT_DARK,
-                w,
-            );
-            painter.galley(Pos2::new(x, rect.top() + 10.0), title_galley, TEXT_DARK);
-
-            if !preview.is_empty() {
-                let g = painter.layout(
-                    truncate(&preview, 34),
-                    FontId::proportional(12.5),
-                    TEXT_SOFT,
-                    w,
-                );
-                painter.galley(Pos2::new(x, rect.top() + 33.0), g, TEXT_SOFT);
-            }
-
-            let tg = painter.layout(
-                fmt_time(updated),
-                FontId::proportional(11.0),
-                TEXT_FAINT,
-                90.0,
-            );
-            painter.galley(
-                Pos2::new(
-                    rect.right() - tg.size().x - 12.0,
-                    rect.bottom() - tg.size().y - 7.0,
-                ),
-                tg,
-                TEXT_FAINT,
             );
 
             if resp.clicked() {

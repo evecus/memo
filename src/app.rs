@@ -33,6 +33,7 @@ pub struct NoteApp {
     pub status_ok: bool,
     /// 一次性提示（例如旧数据迁移完成），显示在编辑区顶部，可手动关闭。
     pub notice: Option<String>,
+    #[allow(dead_code)]
     pub logo_texture: Option<egui::TextureHandle>,
     pub focus_search: bool,
 
