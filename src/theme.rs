@@ -49,7 +49,7 @@ const WARMUP_STATIC_TEXT: &str = "Memo便签新建搜索无标题写点什么创
 
 /// 界面实际用到的字号（painter.layout 与 TextStyle 两种路径都要覆盖）。
 /// 编辑区正文字号。
-pub const EDITOR_FONT_SIZE: f32 = 19.0;
+pub const EDITOR_FONT_SIZE: f32 = 17.0;
 
 const WARMUP_SIZES: [f32; 9] = [
     11.0,
