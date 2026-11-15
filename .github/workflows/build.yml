@@ -1,0 +1,91 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify:
+    name: 检查（fmt / clippy / test）
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Linux 图形依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxcb1-dev libxrandr-dev libxi-dev libgl1-mesa-dev
+
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: 缓存 Cargo 依赖
+        uses: Swatinem/rust-cache@v2
+
+      - name: 格式检查
+        run: cargo fmt --all -- --check
+
+      - name: clippy（零警告）
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: 单元测试
+        run: cargo test --locked
+
+  build-windows:
+    name: 构建 Windows (x86_64-msvc)
+    runs-on: windows-latest
+    needs: verify
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: 缓存 Cargo 依赖
+        uses: Swatinem/rust-cache@v2
+
+      - name: 编译 Release 版本
+        run: cargo build --release --locked --target x86_64-pc-windows-msvc
+
+      - name: 整理产物
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/x86_64-pc-windows-msvc/release/memo.exe dist/Memo.exe
+          cp dist/Memo.exe Memo.exe
+
+      - name: 上传 exe 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: Memo-exe
+          path: dist/Memo.exe
+
+      - name: 安装 NSIS
+        if: github.event_name == 'workflow_dispatch'
+        run: choco install nsis -y
+
+      - name: 使用 NSIS 打包安装程序
+        if: github.event_name == 'workflow_dispatch'
+        shell: cmd
+        run: '"C:\Program Files (x86)\NSIS\makensis.exe" install.nsi'
+
+      - name: 创建 GitHub Release 并上传文件
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.2.0
+          name: Memo v0.2.0
+          files: |
+            dist/Memo.exe
+            Memo-Setup.exe
