@@ -31,14 +31,11 @@ jobs:
           name: Memo-exe
           path: Memo.exe
       - name: 安装 NSIS
-        if: github.event_name == 'workflow_dispatch'
         run: choco install nsis -y
       - name: 使用 NSIS 打包安装程序
-        if: github.event_name == 'workflow_dispatch'
         shell: cmd
         run: '"C:\Program Files (x86)\NSIS\makensis.exe" install.nsi'
       - name: 创建 GitHub Release
-        if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v0.3.0
