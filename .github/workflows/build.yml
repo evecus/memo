@@ -1,0 +1,65 @@
+name: Build
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    name: fmt / clippy / test (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: 安装 GPUI 的 Linux 依赖
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libx11-xcb-dev libxcb1-dev libvulkan-dev libfontconfig-dev libfreetype-dev \
+            libssl-dev pkg-config clang
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+
+  build-windows:
+    name: 构建 Windows (x86_64-msvc)
+    needs: check
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+      - name: 编译 Release 版本
+        run: cargo build --release --target x86_64-pc-windows-msvc
+      - name: 整理产物
+        shell: bash
+        run: |
+          cp target/x86_64-pc-windows-msvc/release/memo.exe Memo.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Memo-exe
+          path: Memo.exe
+      - name: 安装 NSIS
+        if: github.event_name == 'workflow_dispatch'
+        run: choco install nsis -y
+      - name: 使用 NSIS 打包安装程序
+        if: github.event_name == 'workflow_dispatch'
+        shell: cmd
+        run: '"C:\Program Files (x86)\NSIS\makensis.exe" install.nsi'
+      - name: 创建 GitHub Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.3.0
+          name: Memo v0.3.0
+          files: Memo-Setup.exe
